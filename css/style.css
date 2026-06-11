@@ -1509,6 +1509,7 @@ body.modal-open {
 .insight-label.pricing   { background: #eef3f8; color: var(--info); }
 .insight-label.pain      { background: var(--bg-card); color: var(--accent); }
 .insight-label.competition { background: var(--bg-raised); color: var(--text-secondary); }
+.insight-label.heat       { background: #fdf5ec; color: #c27803; }
 
 .insight-item .insight-title {
   font-size: 0.88rem;
