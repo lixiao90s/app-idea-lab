@@ -7,7 +7,7 @@ crons = ["0 */6 * * *"]
 
 [[kv_namespaces]]
 binding = "CACHE"
-id = "YOUR_KV_NAMESPACE_ID"
+id = "304a08311ff5473f9d99e5427dc54ff0"
 
 [vars]
 ENVIRONMENT = "production"

@@ -4,7 +4,7 @@ const API = {
   RSS_BASE: 'https://itunes.apple.com/rss',
   REVIEW_RSS: 'https://itunes.apple.com/rss/customerreviews',
   // Set after Cloudflare Worker deploy — e.g. https://app-idea-lab-api.xxx.workers.dev
-  API_PROXY: '',
+  API_PROXY: 'https://app-idea-lab-api.lixiao918918.workers.dev',
   TRANSLATE: 'https://api.mymemory.translated.net/get',
 };
 
