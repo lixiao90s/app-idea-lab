@@ -40,8 +40,6 @@ const SearchBar = {
     appListEl.innerHTML = Icons.emptyState('search', '<div>正在搜索...</div>');
     Icons.refresh(appListEl);
 
-    detailEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
     try {
       Progress.show(`正在搜索 "${term}"...`, 20);
 

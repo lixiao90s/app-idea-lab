@@ -8,6 +8,22 @@ function destroyScatterChart() {
   }
 }
 
+function mangaBubbleStyle(app) {
+  const valuable = isReferenceApp(app);
+  if (valuable) {
+    return {
+      bg: 'rgba(22, 163, 74, 0.55)',
+      border: '#15803d',
+      width: 2,
+    };
+  }
+  return {
+    bg: 'rgba(255, 255, 255, 0.9)',
+    border: '#52525b',
+    width: 1.5,
+  };
+}
+
 function renderScatterChart(scoredApps, categoryContext) {
   const canvas = document.getElementById('scatterChart');
   if (!canvas) return;
@@ -20,11 +36,12 @@ function renderScatterChart(scoredApps, categoryContext) {
     return {
       x: app.averageUserRating || 0,
       y: Math.max(1, dl.displayMonthly),
-      r: Math.max(4, Math.min(20, app._scores.normalized / 5)),
+      r: Math.max(5, Math.min(18, app._scores.normalized / 6)),
       app: app,
     };
   });
 
+  const styles = data.map(d => mangaBubbleStyle(d.app));
   const ctx = canvas.getContext('2d');
 
   scatterChartInstance = new Chart(ctx, {
@@ -33,19 +50,9 @@ function renderScatterChart(scoredApps, categoryContext) {
       datasets: [{
         label: '应用',
         data: data,
-        backgroundColor: data.map(d => {
-          const level = d.app._scores.level;
-          if (level === 'high') return 'rgba(93, 184, 114, 0.4)';
-          if (level === 'medium') return 'rgba(232, 165, 90, 0.35)';
-          return 'rgba(142, 139, 130, 0.2)';
-        }),
-        borderColor: data.map(d => {
-          const level = d.app._scores.level;
-          if (level === 'high') return 'rgba(93, 184, 114, 0.85)';
-          if (level === 'medium') return 'rgba(232, 165, 90, 0.75)';
-          return 'rgba(142, 139, 130, 0.45)';
-        }),
-        borderWidth: 1.5,
+        backgroundColor: styles.map(s => s.bg),
+        borderColor: styles.map(s => s.border),
+        borderWidth: styles.map(s => s.width),
       }],
     },
     options: {
@@ -55,21 +62,22 @@ function renderScatterChart(scoredApps, categoryContext) {
         legend: { display: false },
         tooltip: {
           backgroundColor: '#fff',
-          borderColor: '#e6dfd8',
+          borderColor: '#e4e4e7',
           borderWidth: 1,
-          titleColor: '#141413',
-          bodyColor: '#6c6a64',
+          titleColor: '#18181b',
+          bodyColor: '#52525b',
           padding: 10,
           cornerRadius: 8,
           displayColors: false,
           bodyFont: { family: "'Inter', sans-serif", size: 12 },
-          titleFont: { family: "'Inter', sans-serif", size: 13, weight: 600 },
+          titleFont: { family: "'Inter', sans-serif", size: 13, weight: '600' },
           callbacks: {
             label: function(context) {
               const app = context.raw.app;
               const dl = estimateDownloads(app, { genreId: categoryContext?.genreId });
+              const tag = isReferenceApp(app) ? ' ★ 值得参考' : '';
               return [
-                app.trackName || 'Unknown',
+                (app.trackName || 'Unknown') + tag,
                 `评分: ${app.averageUserRating?.toFixed(1) || 'N/A'}`,
                 `估月下载: ${dl.displayRange}`,
                 `机会分: ${app._scores.normalized}`,
@@ -80,19 +88,29 @@ function renderScatterChart(scoredApps, categoryContext) {
       },
       scales: {
         x: {
-          title: { display: true, text: '平均评分', color: '#8e8b82', font: { size: 11, family: "'Inter', sans-serif" } },
+          title: {
+            display: true,
+            text: '平均评分',
+            color: '#71717a',
+            font: { size: 11, weight: '500', family: "'Inter', sans-serif" },
+          },
           min: 0,
           max: 5,
-          grid: { color: 'rgba(230, 223, 216, 0.6)' },
-          ticks: { color: '#8e8b82', font: { size: 10 } },
-          border: { color: '#e6dfd8' },
+          grid: { color: 'rgba(24, 24, 27, 0.06)' },
+          ticks: { color: '#71717a', font: { size: 10 } },
+          border: { color: '#e4e4e7' },
         },
         y: {
-          title: { display: true, text: '估月下载', color: '#8e8b82', font: { size: 11, family: "'Inter', sans-serif" } },
+          title: {
+            display: true,
+            text: '估月下载',
+            color: '#71717a',
+            font: { size: 11, weight: '500', family: "'Inter', sans-serif" },
+          },
           type: 'logarithmic',
-          grid: { color: 'rgba(230, 223, 216, 0.6)' },
+          grid: { color: 'rgba(24, 24, 27, 0.06)' },
           ticks: {
-            color: '#8e8b82',
+            color: '#71717a',
             font: { size: 10 },
             callback: function(value) {
               if (value >= 1000000) return (value / 1000000).toFixed(1) + 'M';
@@ -100,14 +118,13 @@ function renderScatterChart(scoredApps, categoryContext) {
               return value;
             },
           },
-          border: { color: '#e6dfd8' },
+          border: { color: '#e4e4e7' },
         },
       },
       onClick: function(event, elements) {
         if (elements.length > 0) {
           const idx = elements[0].index;
-          const app = data[idx].app;
-          showAppDetail(app);
+          showAppDetail(data[idx].app);
         }
       },
     },

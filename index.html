@@ -62,34 +62,36 @@
       </div>
     </div>
 
-    <section id="categorySection">
-      <h2 class="section-title">类别全景</h2>
-      <p class="section-desc">点击类别扫描机会分、搜索热度与下载估算</p>
-      <div class="category-panel">
+    <section id="categorySection" class="category-section-compact">
+      <h2 class="section-title section-title-sm">类别</h2>
+      <div class="category-panel category-panel-compact">
         <div class="category-grid" id="categoryGrid"></div>
       </div>
     </section>
 
     <section class="category-detail" id="categoryDetail">
-      <div class="detail-header">
+      <div class="detail-header detail-header-compact">
         <div>
           <h2 id="detailTitle">类别详情</h2>
           <div class="detail-meta hidden" id="detailMeta"></div>
         </div>
         <button class="btn-close" id="btnCloseDetail" aria-label="关闭"><img src="assets/ui/close.png" alt=""></button>
       </div>
-      <div class="detail-body">
-        <div>
-          <h3 class="section-title">机会分布图</h3>
-          <p class="chart-tips">横轴 = 用户评分，纵轴 = 估月下载量。气泡越大 = 机会分越高。</p>
-          <div class="chart-container">
+      <div class="detail-body detail-body-stack">
+        <div class="detail-chart-col">
+          <h3 class="section-title section-title-sm">机会分布</h3>
+          <div class="chart-legend">
+            <span class="legend-item"><span class="legend-dot"></span>普通</span>
+            <span class="legend-item"><span class="legend-dot valuable"></span>值得参考</span>
+          </div>
+          <div class="chart-container manga-chart">
             <canvas id="scatterChart"></canvas>
           </div>
         </div>
-        <div>
-          <h3 class="section-title">机会排行榜</h3>
-          <p class="chart-tips">综合需求、竞品质量、更新活跃、痛点、变现、搜索热度六个维度。</p>
-          <div class="app-list" id="appList"></div>
+        <div class="detail-list-col">
+          <h3 class="section-title section-title-sm">机会排行榜</h3>
+          <p class="chart-tips-inline">点击行展开差评 · 绿色为值得参考</p>
+          <div class="app-list app-list-expanded" id="appList"></div>
         </div>
       </div>
     </section>

@@ -17,6 +17,9 @@ const AppDetail = {
   },
 
   async show(app) {
+    if (!app._scores && this.currentCategoryContext) {
+      app = scoreApp(app, this.currentCategoryContext);
+    }
     this.currentApp = app;
     this.reviewsTranslated = false;
     this.el.classList.add('active');
@@ -44,9 +47,6 @@ const AppDetail = {
     } else {
       document.getElementById('appLastUpdate').textContent = 'N/A';
     }
-
-    document.getElementById('appPrice').textContent =
-      app.formattedPrice || (app.price === 0 ? '免费' : `$${app.price}`);
 
     const scoreEl = document.getElementById('appOppScore');
     if (app._scores) {

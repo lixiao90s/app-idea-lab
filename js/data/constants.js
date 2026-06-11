@@ -49,10 +49,10 @@ const THRESHOLDS = {
 };
 
 const OPPORTUNITY_LABELS = {
-  high: { text: '高机会', color: '#5db872', bg: '#eef6f0' },
-  medium: { text: '中等机会', color: '#e8a55a', bg: '#fdf5ec' },
-  low: { text: '竞争激烈', color: '#c64545', bg: '#faf0f0' },
-  unknown: { text: '未扫描', color: '#8e8b82', bg: '#f5f0e8' },
+  high: { text: '高机会', color: '#16a34a', bg: '#f0fdf4' },
+  medium: { text: '中等机会', color: '#d97706', bg: '#fffbeb' },
+  low: { text: '竞争激烈', color: '#dc2626', bg: '#fef2f2' },
+  unknown: { text: '未扫描', color: '#71717a', bg: '#f4f4f5' },
 };
 
 const HEAT_LABELS = {

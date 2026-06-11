@@ -82,6 +82,11 @@ function opportunityLevel(score) {
   return 'low';
 }
 
+function isReferenceApp(app) {
+  if (!app || !app._scores) return false;
+  return app._scores.level === 'high' || app._scores.normalized >= THRESHOLDS.SCORE.HIGH;
+}
+
 // Score a single app
 function scoreApp(app, categoryContext) {
   const normalized = opportunityScore(app, categoryContext);

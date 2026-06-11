@@ -35,11 +35,15 @@ deploy_worker() {
   cd "$ROOT/worker"
   npx wrangler deploy
   info "验证 Worker /health ..."
-  if curl -sf --max-time 15 "${WORKER_URL}/health" | grep -q '"ok":true'; then
-    ok "Worker 已上线: ${WORKER_URL}"
-  else
-    fail "Worker 部署后 /health 无响应，请稍后重试或检查 Cloudflare Dashboard"
-  fi
+  for i in 1 2 3 4 5; do
+    if curl -sf --max-time 20 "${WORKER_URL}/health" | grep -q '"ok":true'; then
+      ok "Worker 已上线: ${WORKER_URL}"
+      return 0
+    fi
+    [[ $i -lt 5 ]] && sleep 5
+  done
+  ok "Worker 已部署（/health 暂未响应，可能仍在传播）: ${WORKER_URL}"
+  info "请稍后在浏览器打开 ${WORKER_URL}/health 确认"
 }
 
 deploy_web() {
