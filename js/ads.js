@@ -5,17 +5,47 @@ const Ads = {
   },
 
   initPropellerAds() {
-    if (!CONFIG.PROPELLERADS_ENABLED || !CONFIG.PROPELLERADS_ZONE_ID || !CONFIG.PROPELLERADS_TAG_URL) return;
+    if (!CONFIG.PROPELLERADS_ENABLED) return;
 
+    const multitag = CONFIG.PROPELLERADS_MULTITAG;
+    if (multitag?.url && multitag?.zoneId) {
+      this.injectPropellerScript(multitag.url, multitag.zoneId);
+    }
+
+    const push = CONFIG.PROPELLERADS_PUSH;
+    if (push?.url && push?.zoneId) {
+      this.injectPropellerScript(push.url, push.zoneId);
+    }
+
+    const zones = CONFIG.PROPELLERADS_BANNER_ZONES || {};
+    document.querySelectorAll('.ad-slot[data-ad-slot]').forEach((slot) => {
+      const slotName = slot.dataset.adSlot;
+      const zoneId = zones[slotName];
+      if (!zoneId) return;
+
+      const container = slot.querySelector('.propeller-ad');
+      if (!container) return;
+
+      const bannerUrl = push?.url || multitag?.url;
+      if (!bannerUrl) return;
+
+      this.injectPropellerScript(bannerUrl, zoneId, container);
+    });
+  },
+
+  injectPropellerScript(url, zoneId, parent) {
     const script = document.createElement('script');
-    script.src = CONFIG.PROPELLERADS_TAG_URL;
-    script.setAttribute('data-zone', String(CONFIG.PROPELLERADS_ZONE_ID));
+    script.async = true;
+    script.src = url;
+    script.setAttribute('data-zone', String(zoneId));
     script.setAttribute('data-cfasync', 'false');
-    (document.body || document.documentElement).appendChild(script);
+    (parent || document.body || document.documentElement).appendChild(script);
   },
 
   initAdSense() {
     if (!CONFIG.ADS_ENABLED || !CONFIG.ADSENSE_CLIENT) return;
+
+    document.body.classList.add('adsense-active');
 
     const script = document.createElement('script');
     script.async = true;

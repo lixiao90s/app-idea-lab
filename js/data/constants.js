@@ -18,9 +18,21 @@ const CONFIG = {
   DEFAULT_COUNTRY: 'us',
   ADS_ENABLED: false,
   ADSENSE_CLIENT: '', // ca-pub-xxxxxxxx — fill after AdSense approval
+  // PropellerAds
   PROPELLERADS_ENABLED: true,
-  PROPELLERADS_ZONE_ID: 11132021,
-  PROPELLERADS_TAG_URL: 'https://3nbf4.com/tag.min.js',
+  PROPELLERADS_PUSH: {
+    url: 'https://3nbf4.com/tag.min.js',
+    zoneId: 11132021, // Push (sw.js) — already verified
+  },
+  PROPELLERADS_MULTITAG: {
+    url: 'https://quge5.com/88/tag.min.js',
+    zoneId: 248649,
+  },
+  PROPELLERADS_BANNER_ZONES: {
+    'side-left': '',
+    'side-right': '',
+    detail: '',
+  },
 };
 
 const SCORE_WEIGHTS = {

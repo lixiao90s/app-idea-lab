@@ -1699,6 +1699,10 @@ body.modal-open {
 
 .ad-slot { min-height: 0; text-align: center; margin: 0 auto; padding: 0; }
 .ad-slot.ad-detail { min-height: 0; margin-bottom: 1rem; }
+.propeller-ad { width: 100%; min-height: 90px; }
+.ad-side-inner .propeller-ad { min-height: 250px; }
+body:not(.adsense-active) .ad-slot ins.adsbygoogle { display: none !important; }
+body.adsense-active .ad-slot .propeller-ad { display: none; }
 
 .support-float {
   position: fixed;
