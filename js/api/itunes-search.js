@@ -3,17 +3,21 @@
 async function apiFetch(url) {
   const proxy = API.API_PROXY;
   if (proxy) {
-    const proxyUrl = `${proxy}?url=${encodeURIComponent(url)}`;
-    const resp = await fetch(proxyUrl);
-    if (!resp.ok) {
-      if (resp.status === 429) {
-        console.warn('Worker rate limited, falling back to JSONP');
+    try {
+      const proxyUrl = `${proxy}?url=${encodeURIComponent(url)}`;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 10000);
+      const resp = await fetch(proxyUrl, { signal: controller.signal });
+      clearTimeout(timer);
+      if (!resp.ok) {
+        console.warn(`Worker HTTP ${resp.status}, falling back to JSONP`);
         return jsonpFetch(url);
       }
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err.error || `HTTP ${resp.status}`);
+      return resp.json();
+    } catch (err) {
+      console.warn('Worker unreachable, falling back to JSONP');
+      return jsonpFetch(url);
     }
-    return resp.json();
   }
   return jsonpFetch(url);
 }
