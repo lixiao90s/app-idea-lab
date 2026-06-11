@@ -77,12 +77,7 @@ const CategoryDetail = {
   },
 
   renderAppList(apps) {
-    this.appListEl.innerHTML = `
-      <div class="app-list-header">
-        <span>#</span><span></span><span>应用</span><span>分数</span><span></span>
-      </div>
-      <div class="app-list-body"></div>
-    `;
+    this.appListEl.innerHTML = '<div class="app-list-body"></div>';
     const body = this.appListEl.querySelector('.app-list-body');
 
     if (apps.length === 0) {
@@ -99,23 +94,17 @@ const CategoryDetail = {
       const item = document.createElement('div');
       item.className = 'app-item' + (valuable ? ' app-item-valuable' : '');
 
-      const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : 'rank-other';
       const scoreClass = `score-${app._scores.level}`;
       const iconUrl = app.artworkUrl60 || app.artworkUrl512 || '';
       const rating = app.averageUserRating ? app.averageUserRating.toFixed(1) : 'N/A';
       const count = app.userRatingCount ? app.userRatingCount.toLocaleString() : '0';
-      const dl = estimateDownloads(app, { genreId: this.currentGenreId });
-      const dlText = formatDownloads(dl.displayMonthly) + '/月';
 
       item.innerHTML = `
-        <div class="rank ${rankClass}">${idx + 1}</div>
+        <div class="rank">${idx + 1}</div>
         <img class="app-icon" src="${iconUrl}" alt="" loading="lazy" onerror="this.style.display='none'">
         <div class="app-info">
-          <div class="app-name-row">
-            <span class="app-name">${app.trackName || 'Unknown'}</span>
-            ${valuable ? '<span class="ref-badge">值得参考</span>' : ''}
-          </div>
-          <div class="app-meta">${rating} 分 · ${count} 评论 · 估 ${dlText}</div>
+          <div class="app-name">${app.trackName || 'Unknown'}</div>
+          <div class="app-meta">${rating} 分 · ${count} 评论</div>
         </div>
         <div class="app-score ${scoreClass}">${app._scores.normalized}</div>
         <button type="button" class="btn-app-detail-link" title="完整报告">详情</button>

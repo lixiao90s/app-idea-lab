@@ -8,20 +8,103 @@ function destroyScatterChart() {
   }
 }
 
-function mangaBubbleStyle(app) {
-  const valuable = isReferenceApp(app);
-  if (valuable) {
-    return {
-      bg: 'rgba(22, 163, 74, 0.55)',
-      border: '#15803d',
-      width: 2,
-    };
-  }
-  return {
-    bg: 'rgba(255, 255, 255, 0.9)',
+const BUBBLE_LEVEL_STYLES = {
+  high: {
+    label: '高机会',
+    center: 'rgba(22, 163, 74, 0.02)',
+    centerHover: 'rgba(22, 163, 74, 0.08)',
+    mid: 'rgba(22, 163, 74, 0.22)',
+    midHover: 'rgba(22, 163, 74, 0.38)',
+    edge: 'rgba(22, 163, 74, 0.78)',
+    border: '#15803d',
+    width: 2.2,
+  },
+  medium: {
+    label: '中等',
+    center: 'rgba(217, 119, 6, 0.02)',
+    centerHover: 'rgba(217, 119, 6, 0.08)',
+    mid: 'rgba(217, 119, 6, 0.24)',
+    midHover: 'rgba(217, 119, 6, 0.42)',
+    edge: 'rgba(217, 119, 6, 0.82)',
+    border: '#b45309',
+    width: 2,
+  },
+  low: {
+    label: '竞争激烈',
+    center: 'rgba(113, 113, 122, 0.02)',
+    centerHover: 'rgba(113, 113, 122, 0.06)',
+    mid: 'rgba(113, 113, 122, 0.16)',
+    midHover: 'rgba(113, 113, 122, 0.28)',
+    edge: 'rgba(113, 113, 122, 0.52)',
     border: '#52525b',
-    width: 1.5,
-  };
+    width: 1.6,
+  },
+};
+
+function bubbleRadialGradient(ctx, x, y, r, style, hover = false) {
+  const gradient = ctx.createRadialGradient(x, y, 0, x, y, r);
+  gradient.addColorStop(0, hover ? style.centerHover : style.center);
+  gradient.addColorStop(0.35, hover ? style.midHover : style.mid);
+  gradient.addColorStop(0.72, style.edge);
+  gradient.addColorStop(1, style.edge);
+  return gradient;
+}
+
+const bubbleGradientPlugin = {
+  id: 'bubbleGradient',
+  beforeDatasetsDraw(chart) {
+    const { ctx, data } = chart;
+    data.datasets.forEach((dataset, di) => {
+      const meta = chart.getDatasetMeta(di);
+      if (meta.type !== 'bubble') return;
+
+      const style = BUBBLE_LEVEL_STYLES[dataset._level] || BUBBLE_LEVEL_STYLES.low;
+
+      meta.data.forEach((point, i) => {
+        const { x, y } = point.getProps(['x', 'y'], true);
+        const r = dataset.data[i]?.r ?? 8;
+
+        point.options.backgroundColor = bubbleRadialGradient(ctx, x, y, r, style, false);
+        point.options.borderColor = style.border;
+        point.options.borderWidth = style.width;
+        point.options.hoverBackgroundColor = bubbleRadialGradient(ctx, x, y, r, style, true);
+        point.options.hoverBorderColor = style.border;
+        point.options.hoverBorderWidth = style.width + 0.5;
+      });
+    });
+  },
+};
+
+function bubbleLevel(app) {
+  return app._scores?.level || opportunityLevel(app._scores?.normalized || 0);
+}
+
+function buildBubbleDatasets(scoredApps, genreId) {
+  const groups = { high: [], medium: [], low: [] };
+
+  scoredApps.forEach(app => {
+    const level = bubbleLevel(app);
+    const bucket = groups[level] || groups.low;
+    const dl = estimateDownloads(app, { genreId });
+    bucket.push({
+      x: app.averageUserRating || 0,
+      y: Math.max(1, dl.displayMonthly),
+      r: Math.max(6, Math.min(20, app._scores.normalized / 5)),
+      app,
+    });
+  });
+
+  return ['high', 'medium', 'low'].map(level => {
+    const style = BUBBLE_LEVEL_STYLES[level];
+    return {
+      label: style.label,
+      _level: level,
+      data: groups[level],
+      backgroundColor: style.edge,
+      borderColor: style.border,
+      borderWidth: style.width,
+    };
+  });
 }
 
 function renderScatterChart(scoredApps, categoryContext) {
@@ -31,30 +114,13 @@ function renderScatterChart(scoredApps, categoryContext) {
   destroyScatterChart();
 
   const genreId = categoryContext?.genreId;
-  const data = scoredApps.map(app => {
-    const dl = estimateDownloads(app, { genreId });
-    return {
-      x: app.averageUserRating || 0,
-      y: Math.max(1, dl.displayMonthly),
-      r: Math.max(5, Math.min(18, app._scores.normalized / 6)),
-      app: app,
-    };
-  });
-
-  const styles = data.map(d => mangaBubbleStyle(d.app));
+  const datasets = buildBubbleDatasets(scoredApps, genreId);
   const ctx = canvas.getContext('2d');
 
   scatterChartInstance = new Chart(ctx, {
     type: 'bubble',
-    data: {
-      datasets: [{
-        label: '应用',
-        data: data,
-        backgroundColor: styles.map(s => s.bg),
-        borderColor: styles.map(s => s.border),
-        borderWidth: styles.map(s => s.width),
-      }],
-    },
+    plugins: [bubbleGradientPlugin],
+    data: { datasets },
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -75,7 +141,8 @@ function renderScatterChart(scoredApps, categoryContext) {
             label: function(context) {
               const app = context.raw.app;
               const dl = estimateDownloads(app, { genreId: categoryContext?.genreId });
-              const tag = isReferenceApp(app) ? ' ★ 值得参考' : '';
+              const levelLabel = OPPORTUNITY_LABELS[app._scores?.level]?.text || '';
+              const tag = levelLabel ? ` · ${levelLabel}` : '';
               return [
                 (app.trackName || 'Unknown') + tag,
                 `评分: ${app.averageUserRating?.toFixed(1) || 'N/A'}`,
@@ -123,8 +190,9 @@ function renderScatterChart(scoredApps, categoryContext) {
       },
       onClick: function(event, elements) {
         if (elements.length > 0) {
-          const idx = elements[0].index;
-          showAppDetail(data[idx].app);
+          const el = elements[0];
+          const point = scatterChartInstance.data.datasets[el.datasetIndex].data[el.index];
+          showAppDetail(point.app);
         }
       },
     },
