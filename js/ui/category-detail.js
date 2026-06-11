@@ -5,7 +5,6 @@ const CategoryDetail = {
   appListEl: null,
   currentGenreId: null,
   currentApps: [],
-  expandedTrackId: null,
 
   init() {
     this.el = document.getElementById('categoryDetail');
@@ -19,7 +18,6 @@ const CategoryDetail = {
     if (!genre) return;
 
     this.currentGenreId = genreId;
-    this.expandedTrackId = null;
     this.el.classList.add('active');
     this.titleEl.innerHTML = `${Icons.el(genre.icon, 'title-icon')} ${genre.name}`;
     Icons.refresh(this.titleEl);
@@ -86,10 +84,6 @@ const CategoryDetail = {
     }
 
     apps.forEach((app, idx) => {
-      const row = document.createElement('div');
-      row.className = 'app-row';
-      row.dataset.trackId = app.trackId;
-
       const valuable = isReferenceApp(app);
       const item = document.createElement('div');
       item.className = 'app-item' + (valuable ? ' app-item-valuable' : '');
@@ -110,102 +104,20 @@ const CategoryDetail = {
         <button type="button" class="btn-app-detail-link" title="完整报告">详情</button>
       `;
 
-      const panel = document.createElement('div');
-      panel.className = 'app-reviews-panel hidden';
-      panel.innerHTML = '<div class="reviews-loading">加载差评中...</div>';
-
-      item.querySelector('.btn-app-detail-link').addEventListener('click', (e) => {
-        e.stopPropagation();
+      item.querySelector('.btn-app-detail-link').addEventListener('click', () => {
         showAppDetail(app);
       });
 
-      item.addEventListener('click', () => this.toggleReviews(app, row, panel));
-
-      row.appendChild(item);
-      row.appendChild(panel);
-      body.appendChild(row);
+      body.appendChild(item);
     });
 
     Icons.refresh(this.appListEl);
-  },
-
-  async toggleReviews(app, row, panel) {
-    const trackId = app.trackId;
-
-    if (this.expandedTrackId === trackId) {
-      panel.classList.add('hidden');
-      row.classList.remove('expanded');
-      this.expandedTrackId = null;
-      return;
-    }
-
-    this.appListEl.querySelectorAll('.app-row.expanded').forEach(r => {
-      r.classList.remove('expanded');
-      r.querySelector('.app-reviews-panel')?.classList.add('hidden');
-    });
-
-    row.classList.add('expanded');
-    panel.classList.remove('hidden');
-    this.expandedTrackId = trackId;
-
-    if (app._badReviews) {
-      this.renderBadReviews(panel, app._badReviews);
-      return;
-    }
-
-    panel.innerHTML = '<div class="reviews-loading">加载差评中...</div>';
-
-    try {
-      const reviews = await fetchReviews(trackId);
-      const bad = reviews
-        .filter(r => r.rating <= 3)
-        .sort((a, b) => a.rating - b.rating)
-        .slice(0, 3);
-      app._badReviews = bad;
-      this.renderBadReviews(panel, bad);
-    } catch {
-      panel.innerHTML = '<div class="reviews-empty">暂无差评数据</div>';
-    }
-  },
-
-  renderBadReviews(panel, reviews) {
-    if (!reviews.length) {
-      panel.innerHTML = '<div class="reviews-empty">暂无 1～3 星差评</div>';
-      return;
-    }
-
-    panel.innerHTML = `
-      <div class="reviews-panel-head">用户差评摘录</div>
-      <ul class="inline-review-list">
-        ${reviews.map(r => `
-          <li class="inline-review-item">
-            <span class="review-stars bad">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
-            ${r.title ? `<strong>${this.escapeHtml(r.title)}</strong> · ` : ''}
-            <span>${this.escapeHtml(this.truncate(r.content, 160))}</span>
-          </li>
-        `).join('')}
-      </ul>
-    `;
-  },
-
-  truncate(text, max) {
-    const s = (text || '').trim();
-    return s.length > max ? s.slice(0, max) + '…' : s;
-  },
-
-  escapeHtml(str) {
-    return (str || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
   },
 
   close() {
     this.el.classList.remove('active');
     this.currentGenreId = null;
     this.currentApps = [];
-    this.expandedTrackId = null;
   },
 };
 
