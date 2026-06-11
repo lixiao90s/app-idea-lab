@@ -79,18 +79,22 @@
       </div>
       <div class="detail-body detail-body-stack">
         <div class="detail-chart-col">
-          <h3 class="section-title section-title-sm">机会分布</h3>
-          <div class="chart-legend">
-            <span class="legend-item"><span class="legend-dot"></span>普通</span>
-            <span class="legend-item"><span class="legend-dot valuable"></span>值得参考</span>
+          <div class="detail-col-head">
+            <h3 class="section-title section-title-sm">机会分布</h3>
+            <div class="chart-legend chart-legend-inline">
+              <span class="legend-item"><span class="legend-dot"></span>普通</span>
+              <span class="legend-item"><span class="legend-dot valuable"></span>值得参考</span>
+            </div>
           </div>
           <div class="chart-container manga-chart">
             <canvas id="scatterChart"></canvas>
           </div>
         </div>
         <div class="detail-list-col">
-          <h3 class="section-title section-title-sm">机会排行榜</h3>
-          <p class="chart-tips-inline">点击行展开差评 · 绿色为值得参考</p>
+          <div class="detail-col-head">
+            <h3 class="section-title section-title-sm">机会排行榜</h3>
+            <p class="chart-tips-inline">点击行看差评</p>
+          </div>
           <div class="app-list app-list-expanded" id="appList"></div>
         </div>
       </div>
@@ -216,11 +220,11 @@
       </nav>
       <span class="footer-note">数据来自 Apple 公开 API，估算结果仅供参考</span>
     </div>
-    <div class="support-section" id="supportSection">
+    <div class="support-mobile" id="supportMobile">
       <img src="assets/brand/mascot.png" alt="" class="support-mascot" aria-hidden="true">
       <p class="support-title">如果这个工具对你有帮助，欢迎支持作者</p>
-      <img src="assets/support/wechat-qr.png" alt="微信收款码" class="support-qr" id="supportQr" hidden>
-      <p class="support-hint" id="supportHint">将微信收款码保存为 <code>assets/support/wechat-qr.png</code> 即可显示</p>
+      <img src="assets/support/wechat-qr.png" alt="微信收款码" class="support-qr" id="supportQrMobile" hidden>
+      <p class="support-hint" id="supportHintMobile">将微信收款码保存为 <code>assets/support/wechat-qr.png</code> 即可显示</p>
     </div>
   </footer>
     </div>
@@ -232,6 +236,20 @@
       </div>
     </aside>
   </div>
+
+  <aside class="support-float support-float-left" id="supportSectionLeft" aria-label="支持作者">
+    <img src="assets/brand/mascot.png" alt="" class="support-mascot" aria-hidden="true">
+    <p class="support-title">如果这个工具对你有帮助，欢迎支持作者</p>
+    <img src="assets/support/wechat-qr.png" alt="微信收款码" class="support-qr" id="supportQrLeft" hidden>
+    <p class="support-hint" id="supportHintLeft">将微信收款码保存为 <code>assets/support/wechat-qr.png</code> 即可显示</p>
+  </aside>
+
+  <aside class="support-float support-float-right" id="supportSectionRight" aria-label="支持作者">
+    <img src="assets/brand/mascot.png" alt="" class="support-mascot" aria-hidden="true">
+    <p class="support-title">如果这个工具对你有帮助，欢迎支持作者</p>
+    <img src="assets/support/wechat-qr.png" alt="微信收款码" class="support-qr" id="supportQrRight" hidden>
+    <p class="support-hint" id="supportHintRight">将微信收款码保存为 <code>assets/support/wechat-qr.png</code> 即可显示</p>
+  </aside>
 
   <script src="js/data/constants.js"></script>
   <script src="js/data/genres.js"></script>
