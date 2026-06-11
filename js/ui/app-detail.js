@@ -1,5 +1,7 @@
 const AppDetail = {
   el: null,
+  modalEl: null,
+  modalPanel: null,
   currentApp: null,
   currentCategoryContext: null,
   reviewsTranslated: false,
@@ -7,9 +9,23 @@ const AppDetail = {
 
   init() {
     this.el = document.getElementById('appDetail');
+    this.modalEl = document.getElementById('appDetailModal');
+    this.modalPanel = this.modalEl?.querySelector('.app-detail-modal-panel');
+
     document.getElementById('btnTranslateAll').addEventListener('click', () => {
       this.translateAll();
     });
+
+    if (this.modalEl) {
+      this.modalEl.addEventListener('click', (e) => {
+        if (!this.modalPanel.contains(e.target)) this.close();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.modalEl.classList.contains('open')) {
+          this.close();
+        }
+      });
+    }
   },
 
   setCategoryContext(context) {
@@ -22,8 +38,7 @@ const AppDetail = {
     }
     this.currentApp = app;
     this.reviewsTranslated = false;
-    this.el.classList.add('active');
-    this.el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    this.openModal();
 
     // Report date
     const now = new Date();
@@ -598,7 +613,25 @@ const AppDetail = {
     return matched.length > 0 ? matched : ['暂无关键词数据'];
   },
 
+  openModal() {
+    if (!this.modalEl) {
+      this.el.classList.add('active');
+      this.el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+
+    this.modalEl.classList.add('open');
+    this.modalEl.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    if (this.modalPanel) this.modalPanel.scrollTop = 0;
+  },
+
   close() {
+    if (this.modalEl) {
+      this.modalEl.classList.remove('open');
+      this.modalEl.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+    }
     this.el.classList.remove('active');
   },
 };
