@@ -37,7 +37,8 @@ const SearchBar = {
     document.getElementById('detailMeta').classList.add('hidden');
 
     const appListEl = document.getElementById('appList');
-    appListEl.innerHTML = '<div class="empty-state"><div class="emoji">🔍</div><div>正在搜索...</div></div>';
+    appListEl.innerHTML = Icons.emptyState('search', '<div>正在搜索...</div>');
+    Icons.refresh(appListEl);
 
     detailEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -51,7 +52,8 @@ const SearchBar = {
       Progress.update('正在分析...', 70);
 
       if (results.length === 0) {
-        appListEl.innerHTML = '<div class="empty-state"><div class="emoji">📭</div><div>未找到相关应用，试试其他关键词</div></div>';
+        appListEl.innerHTML = Icons.emptyState('inbox', '<div>未找到相关应用，试试其他关键词</div>');
+        Icons.refresh(appListEl);
         Progress.hide();
         return;
       }
@@ -75,7 +77,8 @@ const SearchBar = {
 
     } catch (err) {
       console.error('Search error:', err);
-      appListEl.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div><div>搜索失败：${err.message}</div></div>`;
+      appListEl.innerHTML = Icons.emptyState('alert-circle', `<div>搜索失败：${err.message}</div>`);
+      Icons.refresh(appListEl);
       Progress.hide();
     }
   },

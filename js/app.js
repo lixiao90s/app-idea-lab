@@ -10,6 +10,8 @@
     AppDetail.init();
     SearchBar.init();
     Ads.init();
+    Icons.refresh();
+    initSupportQr();
 
     // Close detail button
     document.getElementById('btnCloseDetail').addEventListener('click', () => {
@@ -17,6 +19,28 @@
     });
 
     // Welcome state
-    console.log('App Store 灵感发现工具已启动');
+    console.log('App Idea Lab 已启动');
   });
+
+  function initSupportQr() {
+    const img = document.getElementById('supportQr');
+    const hint = document.getElementById('supportHint');
+    if (!img) return;
+
+    function showQr() {
+      img.hidden = false;
+      if (hint) hint.hidden = true;
+    }
+    function hideQr() {
+      img.hidden = true;
+      if (hint) hint.hidden = false;
+    }
+
+    img.addEventListener('load', showQr);
+    img.addEventListener('error', hideQr);
+
+    if (img.complete) {
+      img.naturalWidth > 0 ? showQr() : hideQr();
+    }
+  }
 })();

@@ -1,5 +1,7 @@
 node_modules/
 .wrangler/
+worker/.env
+.env
 .DS_Store
 *.log
 worker/package-lock.json

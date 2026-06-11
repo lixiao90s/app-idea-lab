@@ -1,14 +1,18 @@
 let scatterChartInstance = null;
 let radarChartInstance = null;
 
-function renderScatterChart(scoredApps, categoryContext) {
-  const canvas = document.getElementById('scatterChart');
-  if (!canvas) return;
-
+function destroyScatterChart() {
   if (scatterChartInstance) {
     scatterChartInstance.destroy();
     scatterChartInstance = null;
   }
+}
+
+function renderScatterChart(scoredApps, categoryContext) {
+  const canvas = document.getElementById('scatterChart');
+  if (!canvas) return;
+
+  destroyScatterChart();
 
   const genreId = categoryContext?.genreId;
   const data = scoredApps.map(app => {

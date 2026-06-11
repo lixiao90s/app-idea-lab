@@ -19,10 +19,12 @@ const CategoryDetail = {
 
     this.currentGenreId = genreId;
     this.el.classList.add('active');
-    this.titleEl.textContent = `${genre.icon} ${genre.name}`;
+    this.titleEl.innerHTML = `${Icons.el(genre.icon, 'title-icon')} ${genre.name}`;
+    Icons.refresh(this.titleEl);
     this.metaEl.classList.add('hidden');
     this.metaEl.innerHTML = '';
-    this.appListEl.innerHTML = '<div class="empty-state"><div class="emoji">⏳</div><div>正在扫描该类别...</div></div>';
+    this.appListEl.innerHTML = Icons.emptyState('loader-circle', '<div>正在扫描该类别...</div>');
+    Icons.refresh(this.appListEl);
 
     AppDetail.close();
     this.el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -37,7 +39,7 @@ const CategoryDetail = {
       Progress.update('正在分析应用数据...', 70);
 
       if (searchResults.length === 0) {
-        this.appListEl.innerHTML = '<div class="empty-state"><div class="emoji">📭</div><div>未找到该类别的应用数据</div></div>';
+        this.appListEl.innerHTML = Icons.emptyState('inbox', '<div>未找到该类别的应用数据</div>');
         Progress.hide();
         return;
       }
@@ -68,7 +70,7 @@ const CategoryDetail = {
 
     } catch (err) {
       console.error('Category scan error:', err);
-      this.appListEl.innerHTML = `<div class="empty-state"><div class="emoji">⚠️</div><div>加载失败：${err.message}</div></div>`;
+      this.appListEl.innerHTML = Icons.emptyState('alert-circle', `<div>加载失败：${err.message}</div>`);
       Progress.hide();
     }
   },
@@ -77,7 +79,7 @@ const CategoryDetail = {
     this.appListEl.innerHTML = '';
 
     if (apps.length === 0) {
-      this.appListEl.innerHTML = '<div class="empty-state"><div class="emoji">📭</div><div>暂无数据</div></div>';
+      this.appListEl.innerHTML = Icons.emptyState('inbox', '<div>暂无数据</div>');
       return;
     }
 
@@ -106,6 +108,8 @@ const CategoryDetail = {
       item.addEventListener('click', () => showAppDetail(app));
       this.appListEl.appendChild(item);
     });
+
+    Icons.refresh(this.appListEl);
   },
 
   close() {

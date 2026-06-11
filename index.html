@@ -12,27 +12,47 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 
   <header class="app-header">
-    <div class="brand-row">
-      <span class="brand-logo">◆</span>
-      <h1>App Idea Lab</h1>
+    <div class="header-bg" aria-hidden="true"></div>
+    <div class="header-inner">
+      <div class="header-hero">
+        <div class="header-main">
+          <div class="brand-row">
+            <img src="assets/brand/logo-mark.png" alt="" class="brand-mark">
+            <div class="brand-text">
+              <h1>App Idea Lab</h1>
+              <p>发现 App Store 被忽视的蓝海方向</p>
+            </div>
+          </div>
+          <div class="search-zone">
+            <div class="search-bar">
+              <input type="text" id="searchInput" placeholder="输入关键词，如：冥想、记账、习惯追踪...">
+              <button class="btn-search" id="btnSearch"><i data-lucide="search"></i><span>搜索</span></button>
+              <button class="btn-inspire" id="btnInspire"><i data-lucide="sparkles"></i><span>随机灵感</span></button>
+            </div>
+            <div class="heat-badge hidden" id="searchHeatBadge"></div>
+          </div>
+        </div>
+        <div class="header-mascot-wrap">
+          <img src="assets/brand/mascot.png" alt="App Idea Lab 吉祥物猫咪" class="header-mascot" width="280" height="280">
+        </div>
+      </div>
     </div>
-    <p>发现 App Store 被忽视的蓝海方向 — 评分低、久未更新、但用户需求旺盛</p>
-    <div class="search-bar">
-      <input type="text" id="searchInput" placeholder="输入关键词，如：冥想、记账、习惯追踪...">
-      <button class="btn-search" id="btnSearch">搜索</button>
-      <button class="btn-inspire" id="btnInspire">随机灵感</button>
-    </div>
-    <div class="heat-badge hidden" id="searchHeatBadge"></div>
   </header>
 
-  <div class="ad-slot ad-header" data-ad-slot="header">
-    <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
-  </div>
+  <div class="page-layout">
+    <aside class="ad-slot ad-side ad-side-left" data-ad-slot="side-left">
+      <div class="ad-side-inner">
+        <span class="ad-label">广告</span>
+        <ins class="adsbygoogle" style="display:block" data-ad-format="vertical" data-full-width-responsive="false"></ins>
+      </div>
+    </aside>
 
+    <div class="page-center">
   <main class="main-content">
 
     <div class="progress-bar" id="progressBar">
@@ -45,12 +65,10 @@
     <section id="categorySection">
       <h2 class="section-title">类别全景</h2>
       <p class="section-desc">点击类别扫描机会分、搜索热度与下载估算</p>
-      <div class="category-grid" id="categoryGrid"></div>
+      <div class="category-panel">
+        <div class="category-grid" id="categoryGrid"></div>
+      </div>
     </section>
-
-    <div class="ad-slot ad-content" data-ad-slot="content">
-      <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    </div>
 
     <section class="category-detail" id="categoryDetail">
       <div class="detail-header">
@@ -58,7 +76,7 @@
           <h2 id="detailTitle">类别详情</h2>
           <div class="detail-meta hidden" id="detailMeta"></div>
         </div>
-        <button class="btn-close" id="btnCloseDetail">&times;</button>
+        <button class="btn-close" id="btnCloseDetail" aria-label="关闭"><img src="assets/ui/close.png" alt=""></button>
       </div>
       <div class="detail-body">
         <div>
@@ -78,7 +96,9 @@
 
     <section class="app-detail" id="appDetail">
       <div class="app-detail-header">
-        <img class="app-detail-icon" id="appIcon" src="" alt="">
+        <div class="app-icon-frame">
+          <img class="app-detail-icon" id="appIcon" src="" alt="">
+        </div>
         <div class="app-detail-info">
           <h3 id="appName">App Name</h3>
           <div class="developer" id="appDeveloper">Developer</div>
@@ -185,20 +205,31 @@
 
   </main>
 
-  <div class="ad-slot ad-footer" data-ad-slot="footer">
-    <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
-  </div>
-
   <footer class="site-footer">
     <div class="footer-inner">
-      <span>&copy; 2026 App Idea Lab</span>
+      <span>&copy; 2026 App Idea Lab · lx06.com</span>
       <nav>
         <a href="about.html">关于</a>
         <a href="privacy.html">隐私政策</a>
       </nav>
       <span class="footer-note">数据来自 Apple 公开 API，估算结果仅供参考</span>
     </div>
+    <div class="support-section" id="supportSection">
+      <img src="assets/brand/mascot.png" alt="" class="support-mascot" aria-hidden="true">
+      <p class="support-title">如果这个工具对你有帮助，欢迎支持作者</p>
+      <img src="assets/support/wechat-qr.png" alt="微信收款码" class="support-qr" id="supportQr" hidden>
+      <p class="support-hint" id="supportHint">将微信收款码保存为 <code>assets/support/wechat-qr.png</code> 即可显示</p>
+    </div>
   </footer>
+    </div>
+
+    <aside class="ad-slot ad-side ad-side-right" data-ad-slot="side-right">
+      <div class="ad-side-inner">
+        <span class="ad-label">广告</span>
+        <ins class="adsbygoogle" style="display:block" data-ad-format="vertical" data-full-width-responsive="false"></ins>
+      </div>
+    </aside>
+  </div>
 
   <script src="js/data/constants.js"></script>
   <script src="js/data/genres.js"></script>
@@ -211,6 +242,7 @@
   <script src="js/scoring/opportunity.js"></script>
   <script src="js/scoring/category.js"></script>
   <script src="js/ui/progress.js"></script>
+  <script src="js/ui/icons.js"></script>
   <script src="js/ui/charts.js"></script>
   <script src="js/ui/category-grid.js"></script>
   <script src="js/ui/category-detail.js"></script>
