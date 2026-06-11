@@ -1,5 +1,20 @@
 const Ads = {
   init() {
+    this.initPropellerAds();
+    this.initAdSense();
+  },
+
+  initPropellerAds() {
+    if (!CONFIG.PROPELLERADS_ENABLED || !CONFIG.PROPELLERADS_ZONE_ID || !CONFIG.PROPELLERADS_TAG_URL) return;
+
+    const script = document.createElement('script');
+    script.src = CONFIG.PROPELLERADS_TAG_URL;
+    script.setAttribute('data-zone', String(CONFIG.PROPELLERADS_ZONE_ID));
+    script.setAttribute('data-cfasync', 'false');
+    (document.body || document.documentElement).appendChild(script);
+  },
+
+  initAdSense() {
     if (!CONFIG.ADS_ENABLED || !CONFIG.ADSENSE_CLIENT) return;
 
     const script = document.createElement('script');

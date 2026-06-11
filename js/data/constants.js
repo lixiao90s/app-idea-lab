@@ -18,6 +18,9 @@ const CONFIG = {
   DEFAULT_COUNTRY: 'us',
   ADS_ENABLED: false,
   ADSENSE_CLIENT: '', // ca-pub-xxxxxxxx — fill after AdSense approval
+  PROPELLERADS_ENABLED: true,
+  PROPELLERADS_ZONE_ID: 11132021,
+  PROPELLERADS_TAG_URL: 'https://3nbf4.com/tag.min.js',
 };
 
 const SCORE_WEIGHTS = {
