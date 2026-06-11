@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Idea Lab — App Store 机会发现工具</title>
+  <meta name="description" content="发现 App Store 被忽视的细分市场：低评分、久未更新、但用户需求旺盛的应用方向。含下载量估算与搜索热度分析。">
+  <meta property="og:title" content="App Idea Lab">
+  <meta property="og:description" content="App Store 机会发现与赛道分析工具">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="brand-row">
+      <span class="brand-logo">◆</span>
+      <h1>App Idea Lab</h1>
+    </div>
+    <p>发现 App Store 被忽视的蓝海方向 — 评分低、久未更新、但用户需求旺盛</p>
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="输入关键词，如：冥想、记账、习惯追踪...">
+      <button class="btn-search" id="btnSearch">搜索</button>
+      <button class="btn-inspire" id="btnInspire">随机灵感</button>
+    </div>
+    <div class="heat-badge hidden" id="searchHeatBadge"></div>
+  </header>
+
+  <div class="ad-slot ad-header" data-ad-slot="header">
+    <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  </div>
+
+  <main class="main-content">
+
+    <div class="progress-bar" id="progressBar">
+      <span class="progress-text" id="progressText">正在加载数据...</span>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <section id="categorySection">
+      <h2 class="section-title">类别全景</h2>
+      <p class="section-desc">点击类别扫描机会分、搜索热度与下载估算</p>
+      <div class="category-grid" id="categoryGrid"></div>
+    </section>
+
+    <div class="ad-slot ad-content" data-ad-slot="content">
+      <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    </div>
+
+    <section class="category-detail" id="categoryDetail">
+      <div class="detail-header">
+        <div>
+          <h2 id="detailTitle">类别详情</h2>
+          <div class="detail-meta hidden" id="detailMeta"></div>
+        </div>
+        <button class="btn-close" id="btnCloseDetail">&times;</button>
+      </div>
+      <div class="detail-body">
+        <div>
+          <h3 class="section-title">机会分布图</h3>
+          <p class="chart-tips">横轴 = 用户评分，纵轴 = 估月下载量。气泡越大 = 机会分越高。</p>
+          <div class="chart-container">
+            <canvas id="scatterChart"></canvas>
+          </div>
+        </div>
+        <div>
+          <h3 class="section-title">机会排行榜</h3>
+          <p class="chart-tips">综合需求、竞品质量、更新活跃、痛点、变现、搜索热度六个维度。</p>
+          <div class="app-list" id="appList"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="app-detail" id="appDetail">
+      <div class="app-detail-header">
+        <img class="app-detail-icon" id="appIcon" src="" alt="">
+        <div class="app-detail-info">
+          <h3 id="appName">App Name</h3>
+          <div class="developer" id="appDeveloper">Developer</div>
+          <div class="app-detail-stats">
+            <div class="stat-item">
+              <div class="stat-value" id="appRating">-</div>
+              <div class="stat-label">评分</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="appRatingCount">-</div>
+              <div class="stat-label">评论数</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="appEstDownloads">-</div>
+              <div class="stat-label">估月下载</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="appHeatScore">-</div>
+              <div class="stat-label">搜索热度</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="appLastUpdate">-</div>
+              <div class="stat-label">最后更新</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="appOppScore">-</div>
+              <div class="stat-label">机会分</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="app-detail-body">
+
+        <div class="ad-slot ad-detail" data-ad-slot="detail">
+          <ins class="adsbygoogle" style="display:block" data-ad-format="horizontal" data-full-width-responsive="true"></ins>
+        </div>
+
+        <div class="report-header">
+          <span class="report-label">机会分析报告</span>
+          <span class="report-date" id="reportDate"></span>
+        </div>
+
+        <div class="verdict-banner" id="verdictBanner"></div>
+        <div class="score-breakdown" id="scoreBreakdown"></div>
+
+        <div class="analysis-card" id="downloadsSection" style="display:none;">
+          <h4 class="card-title">下载量估算</h4>
+          <div id="downloadsContent"></div>
+          <p class="disclaimer" id="downloadsDisclaimer"></p>
+        </div>
+
+        <div class="insight-box" id="appInsight">
+          <h4>可行性分析</h4>
+          <div id="insightItems"></div>
+        </div>
+
+        <div class="report-row">
+          <div class="analysis-card" id="revenueSection" style="display:none;">
+            <h4 class="card-title">赚钱预估</h4>
+            <div id="revenueContent"></div>
+          </div>
+          <div class="analysis-card" id="riskStrategySection" style="display:none;">
+            <h4 class="card-title">风险与切入策略</h4>
+            <div id="riskStrategyContent"></div>
+          </div>
+        </div>
+
+        <div class="report-row">
+          <div class="analysis-card" id="mvpSection" style="display:none;">
+            <h4 class="card-title">MVP 功能建议</h4>
+            <div id="mvpContent"></div>
+          </div>
+          <div class="analysis-card" id="personaSection" style="display:none;">
+            <h4 class="card-title">用户画像</h4>
+            <div id="personaContent"></div>
+          </div>
+        </div>
+
+        <div class="analysis-card" id="featureGapSection" style="display:none;">
+          <h4 class="card-title">用户痛点分析</h4>
+          <div id="featureGapContent"></div>
+        </div>
+
+        <div class="analysis-card" id="sentimentSection" style="display:none;">
+          <h4 class="card-title">用户情绪趋势</h4>
+          <div id="sentimentContent"></div>
+          <div style="height:120px; margin-top:0.5rem;">
+            <canvas id="sentimentChart"></canvas>
+          </div>
+        </div>
+
+        <div id="reviewSection" style="display:none;">
+          <div class="review-header">
+            <h4 class="section-title" style="margin-bottom:0;">用户常见抱怨</h4>
+            <button class="btn-translate-all" id="btnTranslateAll">翻译全部</button>
+          </div>
+          <div class="review-keywords" id="reviewKeywords"></div>
+          <ul id="reviewQuotes" style="margin-top:0;"></ul>
+        </div>
+
+        <a class="btn-appstore" id="appStoreLink" href="#" target="_blank">在 App Store 中查看</a>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="ad-slot ad-footer" data-ad-slot="footer">
+    <ins class="adsbygoogle" style="display:block" data-ad-format="auto" data-full-width-responsive="true"></ins>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <span>&copy; 2026 App Idea Lab</span>
+      <nav>
+        <a href="about.html">关于</a>
+        <a href="privacy.html">隐私政策</a>
+      </nav>
+      <span class="footer-note">数据来自 Apple 公开 API，估算结果仅供参考</span>
+    </div>
+  </footer>
+
+  <script src="js/data/constants.js"></script>
+  <script src="js/data/genres.js"></script>
+  <script src="js/api/cache.js"></script>
+  <script src="js/api/scheduler.js"></script>
+  <script src="js/api/itunes-search.js"></script>
+  <script src="js/api/translate.js"></script>
+  <script src="js/scoring/downloads.js"></script>
+  <script src="js/scoring/search-heat.js"></script>
+  <script src="js/scoring/opportunity.js"></script>
+  <script src="js/scoring/category.js"></script>
+  <script src="js/ui/progress.js"></script>
+  <script src="js/ui/charts.js"></script>
+  <script src="js/ui/category-grid.js"></script>
+  <script src="js/ui/category-detail.js"></script>
+  <script src="js/ui/app-detail.js"></script>
+  <script src="js/ui/search-bar.js"></script>
+  <script src="js/ads.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

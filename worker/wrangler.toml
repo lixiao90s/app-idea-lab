@@ -1,0 +1,13 @@
+name = "app-idea-lab-api"
+main = "api-proxy.js"
+compatibility_date = "2024-01-01"
+
+[triggers]
+crons = ["0 */6 * * *"]
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "YOUR_KV_NAMESPACE_ID"
+
+[vars]
+ENVIRONMENT = "production"

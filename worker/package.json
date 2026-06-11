@@ -1,0 +1,13 @@
+{
+  "name": "app-idea-lab-worker",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "kv:create": "wrangler kv namespace create CACHE"
+  },
+  "devDependencies": {
+    "wrangler": "^4.99.0"
+  }
+}
