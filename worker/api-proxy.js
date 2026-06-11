@@ -2,7 +2,9 @@
 // Deploy: npx wrangler deploy (from worker/)
 
 const ALLOWED_PREFIX = 'https://itunes.apple.com/';
-const RATE_LIMIT_PER_MIN = 15;
+const RATE_LIMIT_PER_MIN = 10;
+const UPSTREAM_RETRY_DELAYS_MS = [1000, 2000, 4000];
+const STALE_CACHE_TTL = 604800; // 7 days — served when Apple returns 429
 const CACHE_TTL = {
   search: 14400,
   lookup: 21600,
@@ -57,6 +59,7 @@ async function proxyAppleUrl(targetUrl, env) {
   }
 
   const cacheKey = `cache:${targetUrl}`;
+  const staleKey = `stale:${targetUrl}`;
   if (env.CACHE) {
     const cached = await env.CACHE.get(cacheKey, { type: 'json' });
     if (cached && cached.data) {
@@ -69,14 +72,28 @@ async function proxyAppleUrl(targetUrl, env) {
 
   const allowed = await checkRateLimit(env);
   if (!allowed) {
+    const stale = env.CACHE ? await env.CACHE.get(staleKey, { type: 'json' }) : null;
+    if (stale && stale.data) {
+      return jsonResponse(stale.data, {
+        'X-Cache': 'STALE',
+        'X-Cache-Time': stale.cachedAt || '',
+      });
+    }
     return new Response(JSON.stringify({ error: 'Rate limited, retry later' }), {
       status: 429,
       headers: corsHeaders(),
     });
   }
 
-  const response = await fetch(targetUrl);
+  const response = await fetchWithRetry(targetUrl);
   if (!response.ok) {
+    const stale = env.CACHE ? await env.CACHE.get(staleKey, { type: 'json' }) : null;
+    if (stale && stale.data) {
+      return jsonResponse(stale.data, {
+        'X-Cache': 'STALE',
+        'X-Cache-Time': stale.cachedAt || '',
+      });
+    }
     return new Response(JSON.stringify({ error: `Upstream HTTP ${response.status}` }), {
       status: response.status,
       headers: corsHeaders(),
@@ -85,12 +102,12 @@ async function proxyAppleUrl(targetUrl, env) {
 
   const data = await response.json();
   const ttl = getCacheTtl(targetUrl);
+  const cachedAt = new Date().toISOString();
+  const payload = { data, cachedAt };
 
   if (env.CACHE) {
-    await env.CACHE.put(cacheKey, JSON.stringify({
-      data,
-      cachedAt: new Date().toISOString(),
-    }), { expirationTtl: ttl });
+    await env.CACHE.put(cacheKey, JSON.stringify(payload), { expirationTtl: ttl });
+    await env.CACHE.put(staleKey, JSON.stringify(payload), { expirationTtl: STALE_CACHE_TTL });
   }
 
   return jsonResponse(data, { 'X-Cache': 'MISS' });
@@ -172,15 +189,23 @@ async function checkRateLimit(env) {
 
 async function prefetchGenres(env) {
   for (const [genreId, keyword] of Object.entries(GENRE_KEYWORDS)) {
-    const searchUrl = `${ALLOWED_PREFIX}search?term=${encodeURIComponent(keyword)}&media=software&country=us&limit=200&genreId=${genreId}`;
     try {
-      await proxyAppleUrl(searchUrl, env);
       await handleHeat(new URL(`https://worker/heat?term=${encodeURIComponent(keyword)}&genreId=${genreId}`), env);
     } catch {
       // continue on failure
     }
-    await sleep(4000);
+    await sleep(8000);
   }
+}
+
+async function fetchWithRetry(url) {
+  let response = await fetch(url);
+  for (const delayMs of UPSTREAM_RETRY_DELAYS_MS) {
+    if (response.status !== 429) break;
+    await sleep(delayMs);
+    response = await fetch(url);
+  }
+  return response;
 }
 
 function getCacheTtl(targetUrl) {
