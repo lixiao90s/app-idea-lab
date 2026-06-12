@@ -19,7 +19,7 @@ const CONFIG = {
   ADS_ENABLED: false,
   ADSENSE_CLIENT: '', // ca-pub-xxxxxxxx — fill after AdSense approval
   // PropellerAds
-  PROPELLERADS_ENABLED: true,
+  PROPELLERADS_ENABLED: false,
   PROPELLERADS_PUSH: {
     url: 'https://3nbf4.com/tag.min.js',
     zoneId: 11132021, // Push (sw.js) — already verified
