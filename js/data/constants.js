@@ -17,7 +17,7 @@ const CONFIG = {
   RSS_TOP_LIMIT: 200,
   DEFAULT_COUNTRY: 'us',
   ADS_ENABLED: false,
-  ADSENSE_CLIENT: '', // ca-pub-xxxxxxxx — fill after AdSense approval
+  ADSENSE_CLIENT: 'ca-pub-7494284239496094',
   // PropellerAds
   PROPELLERADS_ENABLED: false,
   PROPELLERADS_PUSH: {
